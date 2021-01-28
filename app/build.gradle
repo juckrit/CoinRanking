@@ -20,12 +20,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -35,6 +29,32 @@ android {
     }
     viewBinding {
         enabled = true
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            debuggable true
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            debuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+        }
+    }
+
+    flavorDimensions "env"
+    productFlavors {
+        production {
+            dimension "env"
+            buildConfigField "String", "BASE_URL", "\"https://api.coinranking.com/v1/public/\""
+        }
+        staging {
+            dimension "env"
+            buildConfigField "String", "BASE_URL", "\"https://api.coinranking.com/v1/public/\""
+        }
     }
 }
 
@@ -62,9 +82,10 @@ dependencies {
     }
 
     //Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.7.2'
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.squareup.retrofit2:converter-scalars:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     // Paging
     implementation 'androidx.paging:paging-runtime:2.1.2'
@@ -110,7 +131,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline:3.0.0'
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
     testImplementation 'org.amshove.kluent:kluent:1.51'
-
 
 
 }
