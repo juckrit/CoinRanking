@@ -132,5 +132,8 @@ dependencies {
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
     testImplementation 'org.amshove.kluent:kluent:1.51'
 
+    implementation "androidx.navigation:navigation-dynamic-features-fragment:2.3.0-SNAPSHOT"
+
+
 
 }
