@@ -56,7 +56,7 @@ android {
             buildConfigField "String", "BASE_URL", "\"https://api.coinranking.com/v1/public/\""
         }
     }
-    dynamicFeatures = [':main']
+    dynamicFeatures = [':coin_feature']
 }
 
 dependencies {
