@@ -6,6 +6,10 @@ plugins {
 
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
@@ -66,6 +70,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -136,5 +141,7 @@ dependencies {
     implementation "androidx.navigation:navigation-dynamic-features-fragment:2.3.0-SNAPSHOT"
 
 
-
+    implementation "com.airbnb.android:epoxy:4.3.1"
+    // Add the annotation processor if you are using Epoxy's annotations (recommended)
+    kapt "com.airbnb.android:epoxy-processor:4.3.1"
 }
