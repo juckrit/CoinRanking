@@ -19,7 +19,9 @@ class CoinRepositoryImpl(private val coinRemoteDataSource: CoinRemoteDataSource)
             val response = getCoinsServices().getCoins(offset = currentPage * 10)
             val status = response.status
             val coinList = response.data.coins
-            Log.d("test",coinList.size.toString())
+            Log.d("test size",coinList.size.toString())
+            Log.d("test page",currentPage.toString())
+            Log.d("test offset",(currentPage * 10).toString())
             val loadResult = PagingSource.LoadResult.Page(
                 data = response.data.coins,
                 prevKey = if (currentPage == 0) null else currentPage - 1,
