@@ -7,6 +7,7 @@ import com.example.coinranking.data.repository.CoinRemotePagingSource
 import com.example.coinranking.data.repository.CoinRepositoryImpl
 import com.example.coinranking.domain.repository.CoinRepository
 import com.example.coinranking.domain.usecase.GetCoinUseCase
+import com.example.coinranking.presentation.main.MainViewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -29,8 +30,13 @@ val appModule = module {
     }
 
     single<GetCoinUseCase>(named(DI_NAME_DI_NAME_GetCoinUseCase)) {
-        GetCoinUseCase(get(named(DI_NAME_CoinRepository)))
+        GetCoinUseCase(get(named(DI_NAME_CoinRemoteDataSourceImpl)))
     }
+    single<MainViewModel>(named(DI_NAME_MainViewModel)) {
+        MainViewModel(get(named(DI_NAME_DI_NAME_GetCoinUseCase)))
+    }
+
+
 
 
 

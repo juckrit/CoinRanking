@@ -15,9 +15,5 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
 
-    <TextView
-        android:id="@+id/my_textView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
