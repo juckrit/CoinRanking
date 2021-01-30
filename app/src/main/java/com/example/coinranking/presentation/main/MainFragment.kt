@@ -1,23 +1,26 @@
 package com.example.coinranking.presentation.main
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.paging.PagingData
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.coinranking.databinding.FragmentMainBinding
 import com.example.coinranking.presentation.di.DI_NAME_MainViewModel
+import com.example.coinranking.presentation.helper.PostsLoadStateAdapter
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 
-class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
+class MainFragment : Fragment() {
 
     private var _binding: FragmentMainBinding? = null
 
@@ -45,14 +48,13 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setup()
-        addlistener()
+        initSwipeToRefresh()
         observer()
     }
 
 
-    private fun addlistener() {
-        binding.swiperefresh.setOnRefreshListener(this)
-
+    private fun initSwipeToRefresh() {
+        binding.swiperefresh.setOnRefreshListener { coinAdapter.refresh() }
     }
 
     private fun observer() {
@@ -61,7 +63,19 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 coinAdapter.submitData(it)
             }
         }
-
+        lifecycleScope.launchWhenCreated {
+            coinAdapter.loadStateFlow.collectLatest { loadStates ->
+                binding.swiperefresh.isRefreshing = loadStates.refresh is LoadState.Loading
+            }
+        }
+        lifecycleScope.launchWhenCreated {
+            coinAdapter.loadStateFlow
+                // Only emit when REFRESH LoadState for RemoteMediator changes.
+                .distinctUntilChangedBy { it.refresh }
+                // Only react to cases where Remote REFRESH completes i.e., NotLoading.
+                .filter { it.refresh is LoadState.NotLoading }
+                .collect { binding.recyclerview.scrollToPosition(0) }
+        }
     }
 
     private fun setup() {
@@ -73,6 +87,10 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             adapter = coinAdapter
             binding.recyclerview.adapter?.notifyDataSetChanged()
         }
+        binding.recyclerview.adapter = coinAdapter.withLoadStateHeaderAndFooter(
+            header = PostsLoadStateAdapter(coinAdapter),
+            footer = PostsLoadStateAdapter(coinAdapter)
+        )
     }
 
     override fun onDestroy() {
@@ -80,15 +98,6 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         _binding = null
     }
 
-    override fun onRefresh() {
-        if (!binding.swiperefresh.isRefreshing()) {
-            binding.swiperefresh.post(Runnable { binding.swiperefresh.setRefreshing(true) })
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            coinAdapter.refresh()
-            if (binding.swiperefresh.isRefreshing()) {
-                binding.swiperefresh.post(Runnable { binding.swiperefresh.setRefreshing(false) })
-            }
-        }
-    }
+
+
 }
