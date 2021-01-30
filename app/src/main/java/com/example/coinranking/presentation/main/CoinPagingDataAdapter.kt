@@ -1,23 +1,22 @@
 package com.example.coinranking.presentation.main
 
+
 import android.content.Context
+import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
-import coil.api.load
-import coil.decode.SvgDecoder
-import coil.request.LoadRequest
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.example.coinranking.data.CoinCoinsModel
 import com.example.coinranking.databinding.ItemListCoinBinding
 import com.example.coinranking.databinding.ItemListCoinSeparatorBinding
-import java.util.*
+import com.example.coinranking.presentation.helper.GlideApp
+import com.example.coinranking.presentation.helper.SvgSoftwareLayerSetter
 
 
 class CoinPagingDataAdapter(
@@ -69,25 +68,6 @@ class CoinPagingDataAdapter(
         }
     }
 
-    private fun ImageView.loadSvgOrOthers(myUrl: String?) {
-        myUrl?.let {
-            if (it.toLowerCase(Locale.ENGLISH).endsWith("svg")) {
-                val imageLoader = ImageLoader.Builder(this.context)
-                    .componentRegistry {
-                        add(SvgDecoder(this@loadSvgOrOthers.context))
-                    }
-                    .build()
-                val request = LoadRequest.Builder(this.context)
-                    .data(it)
-                    .target(this)
-                    .build()
-                imageLoader.execute(request)
-            } else {
-                this.load(myUrl)
-            }
-        }
-    }
-
     inner class CoinViewHolder(private val binding: ItemListCoinBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun binding(model: CoinCoinsModel) {
@@ -97,7 +77,15 @@ class CoinPagingDataAdapter(
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.iv)
             } else {
-                binding.iv.loadSvgOrOthers(model.iconUrl)
+
+                val requestBuilder = GlideApp.with(binding.root.context)
+                    .`as`(PictureDrawable::class.java)
+                    .transition(withCrossFade())
+                    .listener(SvgSoftwareLayerSetter())
+
+                requestBuilder.diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .load(Uri.parse(model.iconUrl))
+                    .into(binding.iv)
             }
             binding.tvName.text = model.name
             binding.tvDesc.text = model.description
@@ -113,7 +101,14 @@ class CoinPagingDataAdapter(
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.iv)
             } else {
-                binding.iv.loadSvgOrOthers(model.iconUrl)
+                val requestBuilder = GlideApp.with(binding.root.context)
+                    .`as`(PictureDrawable::class.java)
+                    .transition(withCrossFade())
+                    .listener(SvgSoftwareLayerSetter())
+                requestBuilder.diskCacheStrategy(DiskCacheStrategy.NONE)
+
+                    .load(Uri.parse(model.iconUrl))
+                    .into(binding.iv)
             }
             binding.tvName.text = model.name
         }
