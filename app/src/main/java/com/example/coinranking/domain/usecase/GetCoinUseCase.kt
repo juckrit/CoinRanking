@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 class GetCoinUseCase(
     private val coinRemoteDataSource: CoinRemoteDataSource
 ) {
-    fun execute(): Flow<PagingData<CoinCoinsModel>> {
+    suspend fun execute(): Flow<PagingData<CoinCoinsModel>> {
         val result = Pager(PagingConfig(pageSize = 10)) {
 //            CoinRemotePagingSource(coinRepository.getCoinsServices())
             CoinRepositoryImpl(coinRemoteDataSource)

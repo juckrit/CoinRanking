@@ -1,10 +1,13 @@
 package com.example.coinranking.presentation.main
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.example.coinranking.data.CoinCoinsModel
 import com.example.coinranking.domain.usecase.GetCoinUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class MainViewModel(private val getCoinUseCase: GetCoinUseCase) : ViewModel() {
 
@@ -14,12 +17,18 @@ class MainViewModel(private val getCoinUseCase: GetCoinUseCase) : ViewModel() {
     fun getCoins() = coins
 
     fun fetchCoin(){
-        val result = getCoinUseCase.execute()
-        coins = result
+        viewModelScope.launch(Dispatchers.IO){
+            val result = getCoinUseCase.execute()
+            coins = result
+        }
+
     }
 
     fun refresh(){
-        coins = null
-        coins = getCoinUseCase.execute()
+        viewModelScope.launch(Dispatchers.IO){
+            coins = null
+            coins = getCoinUseCase.execute()
+        }
+
     }
 }
