@@ -1,5 +1,6 @@
 package com.example.coinranking.presentation.main
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -47,6 +48,7 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         observer()
     }
 
+
     private fun addlistener() {
         binding.swiperefresh.setOnRefreshListener(this)
 
@@ -63,7 +65,7 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private fun setup() {
         viewModel.fetchCoin()
-        coinAdapter = CoinPagingDataAdapter(requireContext(), viewLifecycleOwner)
+        coinAdapter = CoinPagingDataAdapter(requireContext(), viewLifecycleOwner,context as Activity)
         binding.recyclerview.apply {
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

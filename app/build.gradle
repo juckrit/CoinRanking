@@ -143,4 +143,8 @@ dependencies {
     implementation "com.airbnb.android:epoxy:4.3.1"
     // Add the annotation processor if you are using Epoxy's annotations (recommended)
     kapt "com.airbnb.android:epoxy-processor:4.3.1"
+
+//    implementation 'com.github.ar-android:AndroidSvgLoader:1.0.2'
+    implementation("io.coil-kt:coil:0.11.0")
+    implementation("io.coil-kt:coil-svg:0.11.0")
 }

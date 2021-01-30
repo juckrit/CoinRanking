@@ -1,18 +1,34 @@
 package com.example.coinranking.presentation.main
 
+import android.app.Activity
 import android.content.Context
+import android.graphics.drawable.PictureDrawable
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.LifecycleOwner
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
+import coil.api.load
+import coil.decode.SvgDecoder
+import coil.request.LoadRequest
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.coinranking.data.CoinCoinsModel
 import com.example.coinranking.databinding.ItemListCoinBinding
 import com.example.coinranking.databinding.ItemListCoinSeparatorBinding
+import java.util.*
 
-class CoinPagingDataAdapter(private val mContext: Context, private val lifecycle: LifecycleOwner) :
+
+class CoinPagingDataAdapter(
+    private val mContext: Context,
+    private val lifecycle: LifecycleOwner,
+    private val activity: Activity
+) :
     PagingDataAdapter<CoinCoinsModel, RecyclerView.ViewHolder>(MyCoinsComparator) {
 
     private val inflater = LayoutInflater.from(mContext)
@@ -57,21 +73,54 @@ class CoinPagingDataAdapter(private val mContext: Context, private val lifecycle
                 (holder as SeparatorViewHolder)
             }
             else -> {
-                getItem(position)?.let { (holder as CoinViewHolder).binding(it) }
+                getItem(position)?.let { (holder as CoinViewHolder).binding(it, activity) }
             }
         }
     }
 
     inner class CoinViewHolder(private val binding: ItemListCoinBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun binding(model: CoinCoinsModel) {
 
-            Glide.with(binding.root.context)
-                .load(model.iconUrl)
-                .into(binding.iv)
+        fun ImageView.loadSvgOrOthers(myUrl: String?) {
+            myUrl?.let {
+                if (it.toLowerCase(Locale.ENGLISH).endsWith("svg")) {
+                    val imageLoader = ImageLoader.Builder(this.context)
+                        .componentRegistry {
+                            add(SvgDecoder(this@loadSvgOrOthers.context))
+                        }
+                        .build()
+                    val request = LoadRequest.Builder(this.context)
+                        .data(it)
+                        .target(this)
+                        .build()
+                    imageLoader.execute(request)
+                } else {
+                    this.load(myUrl)
+                }
+            }
+        }
+
+        fun binding(model: CoinCoinsModel, activity: Activity) {
+
+            if (model.iconType == "pixel") {
+                Glide.with(binding.root.context)
+                    .load(model.iconUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.iv)
+            } else {
+                val uri: Uri =
+                    Uri.parse(model.iconUrl)
+
+
+                binding.iv.loadSvgOrOthers(model.iconUrl)
+
+
+            }
             binding.tvName.text = model.name
             binding.tvDesc.text = model.description
         }
+
+
     }
 
     inner class SeparatorViewHolder(private val binding: ItemListCoinSeparatorBinding) :
