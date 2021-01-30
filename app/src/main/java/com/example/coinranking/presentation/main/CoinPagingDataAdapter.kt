@@ -70,22 +70,22 @@ class CoinPagingDataAdapter(
     }
 
     private fun ImageView.loadSvgOrOthers(myUrl: String?) {
-        myUrl?.let {
-            if (it.toLowerCase(Locale.ENGLISH).endsWith("svg")) {
-                val imageLoader = ImageLoader.Builder(this.context)
-                    .componentRegistry {
-                        add(SvgDecoder(this@loadSvgOrOthers.context))
-                    }
-                    .build()
-                val request = LoadRequest.Builder(this.context)
-                    .data(it)
-                    .target(this)
-                    .build()
-                imageLoader.execute(request)
-            } else {
-                this.load(myUrl)
-            }
-        }
+//        myUrl?.let {
+//            if (it.toLowerCase(Locale.ENGLISH).endsWith("svg")) {
+//                val imageLoader = ImageLoader.Builder(this.context)
+//                    .componentRegistry {
+//                        add(SvgDecoder(this@loadSvgOrOthers.context))
+//                    }
+//                    .build()
+//                val request = LoadRequest.Builder(this.context)
+//                    .data(it)
+//                    .target(this)
+//                    .build()
+//                imageLoader.execute(request)
+//            } else {
+//                this.load(myUrl)
+//            }
+//        }
     }
 
     inner class CoinViewHolder(private val binding: ItemListCoinBinding) :

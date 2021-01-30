@@ -1,6 +1,7 @@
 package com.example.coinranking.presentation.di
 
 import com.example.coinranking.data.api.CoinRankingService
+import com.example.coinranking.data.repository.CoinPagingSource
 import com.example.coinranking.data.repository.CoinRemoteDataSource
 import com.example.coinranking.data.repository.CoinRemoteDataSourceImpl
 import com.example.coinranking.data.repository.CoinRepositoryImpl
@@ -18,7 +19,11 @@ val appModule = module {
         CoinRemoteDataSourceImpl(get(named(DI_NAME_CoinRankingService)))
     }
 
-    single<CoinRepository>(named(DI_NAME_CoinRepository)) {
+    single<CoinPagingSource>(named(DI_NAME_CoinPagingSource)) {
+        CoinPagingSource(get(named(DI_NAME_CoinRankingService)))
+    }
+
+    single(named(DI_NAME_CoinRepository)) {
         CoinRepositoryImpl(get(named(DI_NAME_CoinRemoteDataSourceImpl)))
     }
 
@@ -26,7 +31,7 @@ val appModule = module {
         GetCoinUseCase(get(named(DI_NAME_CoinRemoteDataSourceImpl)))
     }
     single<MainViewModel>(named(DI_NAME_MainViewModel)) {
-        MainViewModel(get(named(DI_NAME_DI_NAME_GetCoinUseCase)))
+        MainViewModel(get(named(DI_NAME_DI_NAME_GetCoinUseCase)),get(named(DI_NAME_CoinRankingService)))
     }
 
 
