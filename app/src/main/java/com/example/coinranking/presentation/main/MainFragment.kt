@@ -65,7 +65,7 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private fun setup() {
         viewModel.fetchCoin()
-        coinAdapter = CoinPagingDataAdapter(requireContext(), viewLifecycleOwner,context as Activity)
+        coinAdapter = CoinPagingDataAdapter(requireContext())
         binding.recyclerview.apply {
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

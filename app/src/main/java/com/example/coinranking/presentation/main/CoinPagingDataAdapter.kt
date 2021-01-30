@@ -1,14 +1,10 @@
 package com.example.coinranking.presentation.main
 
-import android.app.Activity
 import android.content.Context
-import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.lifecycle.LifecycleOwner
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -25,9 +21,7 @@ import java.util.*
 
 
 class CoinPagingDataAdapter(
-    private val mContext: Context,
-    private val lifecycle: LifecycleOwner,
-    private val activity: Activity
+    private val mContext: Context
 ) :
     PagingDataAdapter<CoinCoinsModel, RecyclerView.ViewHolder>(MyCoinsComparator) {
 
@@ -73,7 +67,7 @@ class CoinPagingDataAdapter(
                 (holder as SeparatorViewHolder)
             }
             else -> {
-                getItem(position)?.let { (holder as CoinViewHolder).binding(it, activity) }
+                getItem(position)?.let { (holder as CoinViewHolder).binding(it) }
             }
         }
     }
@@ -100,7 +94,7 @@ class CoinPagingDataAdapter(
             }
         }
 
-        fun binding(model: CoinCoinsModel, activity: Activity) {
+        fun binding(model: CoinCoinsModel) {
 
             if (model.iconType == "pixel") {
                 Glide.with(binding.root.context)
