@@ -16,7 +16,7 @@ interface CoinRankingService {
     //https://api.coinranking.com/v1/public/coins?limit=2&offset=0
     @GET("coins")
     suspend fun getCoins(
-        @Query("limit") limit: Int? = 10,
+        @Query("limit") limit: Int,
         @Query("offset") offset: Int
     ): GetCoinResponseModel
 

@@ -83,9 +83,11 @@ class CoinPagingDataAdapter(
                     .transition(withCrossFade())
                     .listener(SvgSoftwareLayerSetter())
 
-                requestBuilder.diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .load(Uri.parse(model.iconUrl))
-                    .into(binding.iv)
+                model.iconUrl?.let {
+                    requestBuilder.diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .load(Uri.parse(model.iconUrl))
+                        .into(binding.iv)
+                }
             }
             binding.tvName.text = model.name
             binding.tvDesc.text = model.description
@@ -105,10 +107,13 @@ class CoinPagingDataAdapter(
                     .`as`(PictureDrawable::class.java)
                     .transition(withCrossFade())
                     .listener(SvgSoftwareLayerSetter())
-                requestBuilder.diskCacheStrategy(DiskCacheStrategy.NONE)
 
-                    .load(Uri.parse(model.iconUrl))
-                    .into(binding.iv)
+                model.iconUrl?.let {
+                    requestBuilder.diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .load(Uri.parse(model.iconUrl))
+                        .into(binding.iv)
+                }
+
             }
             binding.tvName.text = model.name
         }
