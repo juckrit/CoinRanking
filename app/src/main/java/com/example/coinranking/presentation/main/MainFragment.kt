@@ -81,10 +81,14 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onRefresh() {
+        if (!binding.swiperefresh.isRefreshing()) {
+            binding.swiperefresh.post(Runnable { binding.swiperefresh.setRefreshing(true) })
+        }
         viewLifecycleOwner.lifecycleScope.launch {
-            coinAdapter.submitData(PagingData.empty())
-            viewModel.refresh()
-
+            coinAdapter.refresh()
+            if (binding.swiperefresh.isRefreshing()) {
+                binding.swiperefresh.post(Runnable { binding.swiperefresh.setRefreshing(false) })
+            }
         }
     }
 }
