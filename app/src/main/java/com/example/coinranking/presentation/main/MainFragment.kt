@@ -5,13 +5,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.coinranking.databinding.FragmentMainBinding
 import com.example.coinranking.presentation.di.DI_NAME_MainViewModel
+import com.example.coinranking.presentation.helper.NetworkState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -61,10 +64,24 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 coinAdapter.submitData(it)
             }
         }
+        viewModel.getNetworkState()?.observe(viewLifecycleOwner, Observer{
+            when(it.mStatus){
+                NetworkState.Status.RUNNING ->{
+                    Toast.makeText(requireContext(),"loading",Toast.LENGTH_SHORT).show()
+                }
+                NetworkState.Status.FAILED->{
+                    Toast.makeText(requireContext(),it.mMsg,Toast.LENGTH_SHORT).show()
+                }
+                NetworkState.Status.SUCCESS->{
+                    Toast.makeText(requireContext(),"load success",Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
 
     }
 
     private fun setup() {
+        viewModel.initNetworkState()
         viewModel.fetchCoin()
         coinAdapter = CoinPagingDataAdapter(requireContext())
         binding.recyclerview.apply {
@@ -78,6 +95,7 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+        viewModel.setNetworkStateToNull()
     }
 
     override fun onRefresh() {
