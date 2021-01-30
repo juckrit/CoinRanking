@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.coinranking.presentation.main.ItemListCoinViewEpoxy xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/iv"
         android:layout_width="50dp"
         android:layout_height="50dp"
         tools:src="@drawable/ic_launcher_background"
@@ -24,8 +24,8 @@
         android:maxLines="1"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/imageView"
-        app:layout_constraintTop_toTopOf="@id/imageView"
+        app:layout_constraintStart_toEndOf="@id/iv"
+        app:layout_constraintTop_toTopOf="@id/iv"
         tools:text="Bitcoin" />
 
     <TextView
@@ -38,10 +38,9 @@
         android:ellipsize="end"
         android:maxLines="3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/imageView"
+        app:layout_constraintStart_toEndOf="@id/iv"
         app:layout_constraintTop_toBottomOf="@id/tv_name"
-        tools:text="<p>Bitcoin (BTC) is the first decentralized digital currency that can be sent through the internet globally, without using an intermediary; such as financial institutions, like a (central) bank or agency. The Bitcoin transactions are controlled by many of its users, instead of a few entities. The processing of these transactions is called ‘mining’; new Bitcoin transactions, known as blocks, are added to the record of past transactions on the blockchain. In return, they get awarded with Bitcoin.</p>\n<h3>The goal of Bitcoin</h3>\n<p>Bitcoin was invented as a new electronic cash system that’s fully peer-to-peer, with no third party as an intermediary. Bitcoin was created because of a few main concerns of the inventor, like manipulation of the money supply, with inflation as result; profitable monopolies and oligopolies in financial services, such as the high fees for international money transfers; and tracking the money used by people.</p>\n<h3>Who built Bitcoin</h3>\n<p>In 2008, Bitcoin was invented by an anonymous person or group named Satoshi Nakamoto. In 2009, Bitcoin was released as open-source software. Nakamoto’s real identity is still unknown, although there are many theories about who it might be. Decentralization is one of Bitcoin’s most important principles, and that’s why this anonymity is perfectly in line.</p>\n<h3>The technology of Bitcoin</h3>\n<p>The Bitcoin blockchain is a database, the so-called ‘ledger’, that consists of Bitcoin transaction records. For new transactions to be added to the ledger, the nodes must agree that the transaction is real and valid. The blockchain is public and contains records of all the transactions taking place.</p>" />
-
+        tools:text="asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdasdfasdfasdffasdf"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -49,4 +48,4 @@
         android:background="@color/black"
         app:layout_constraintTop_toBottomOf="@id/tv_desc" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.example.coinranking.presentation.main.ItemListCoinViewEpoxy>
