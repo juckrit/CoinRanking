@@ -43,7 +43,13 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setup()
+        addlistener()
         observer()
+    }
+
+    private fun addlistener() {
+        binding.swiperefresh.setOnRefreshListener(this)
+
     }
 
     private fun observer() {

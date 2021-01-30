@@ -1,5 +1,6 @@
 package com.example.coinranking.data.repository
 
+import android.util.Log
 import androidx.paging.PagingSource
 import com.example.coinranking.data.CoinCoinsModel
 import com.example.coinranking.data.api.CoinRankingService
@@ -18,6 +19,7 @@ class CoinRepositoryImpl(private val coinRemoteDataSource: CoinRemoteDataSource)
             val response = getCoinsServices().getCoins(offset = currentPage * 10)
             val status = response.status
             val coinList = response.data.coins
+            Log.d("test",coinList.size.toString())
             val loadResult = PagingSource.LoadResult.Page(
                 data = response.data.coins,
                 prevKey = if (currentPage == 0) null else currentPage - 1,
@@ -29,6 +31,7 @@ class CoinRepositoryImpl(private val coinRemoteDataSource: CoinRemoteDataSource)
             )
             return loadResult
         } catch (e: Exception) {
+            Log.d("test","fail")
             return PagingSource.LoadResult.Error(e)
         }
     }
