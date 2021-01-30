@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.coinranking.databinding.FragmentMainBinding
@@ -80,6 +81,10 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onRefresh() {
-        viewModel.refresh()
+        viewLifecycleOwner.lifecycleScope.launch {
+            coinAdapter.submitData(PagingData.empty())
+            viewModel.refresh()
+
+        }
     }
 }

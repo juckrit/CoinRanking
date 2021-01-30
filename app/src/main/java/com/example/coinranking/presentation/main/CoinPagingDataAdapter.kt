@@ -41,12 +41,23 @@ class CoinPagingDataAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-//        return if (position == 0) {
-//            TYPE_SEPARATOR
+//        if (position > 0) {
+//            if (position % 4 == 0) {
+//                return TYPE_SEPARATOR
+//            } else {
+//                return TYPE_NORMAL
+//            }
 //        } else {
-//            TYPE_NORMAL
+//            return TYPE_NORMAL
 //        }
-        return TYPE_NORMAL
+
+        if (position % 5 == 4) {
+            return TYPE_SEPARATOR
+        } else {
+            return TYPE_NORMAL
+        }
+
+//        return TYPE_NORMAL
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -64,7 +75,7 @@ class CoinPagingDataAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
             TYPE_SEPARATOR -> {
-                (holder as SeparatorViewHolder)
+                getItem(position)?.let { (holder as SeparatorViewHolder).binding(it) }
             }
             else -> {
                 getItem(position)?.let { (holder as CoinViewHolder).binding(it) }
@@ -72,27 +83,28 @@ class CoinPagingDataAdapter(
         }
     }
 
+    private fun ImageView.loadSvgOrOthers(myUrl: String?) {
+        myUrl?.let {
+            if (it.toLowerCase(Locale.ENGLISH).endsWith("svg")) {
+                val imageLoader = ImageLoader.Builder(this.context)
+                    .componentRegistry {
+                        add(SvgDecoder(this@loadSvgOrOthers.context))
+                    }
+                    .build()
+                val request = LoadRequest.Builder(this.context)
+                    .data(it)
+                    .target(this)
+                    .build()
+                imageLoader.execute(request)
+            } else {
+                this.load(myUrl)
+            }
+        }
+    }
+
     inner class CoinViewHolder(private val binding: ItemListCoinBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun ImageView.loadSvgOrOthers(myUrl: String?) {
-            myUrl?.let {
-                if (it.toLowerCase(Locale.ENGLISH).endsWith("svg")) {
-                    val imageLoader = ImageLoader.Builder(this.context)
-                        .componentRegistry {
-                            add(SvgDecoder(this@loadSvgOrOthers.context))
-                        }
-                        .build()
-                    val request = LoadRequest.Builder(this.context)
-                        .data(it)
-                        .target(this)
-                        .build()
-                    imageLoader.execute(request)
-                } else {
-                    this.load(myUrl)
-                }
-            }
-        }
 
         fun binding(model: CoinCoinsModel) {
 
@@ -119,8 +131,22 @@ class CoinPagingDataAdapter(
 
     inner class SeparatorViewHolder(private val binding: ItemListCoinSeparatorBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun binding() {
+        fun binding(model: CoinCoinsModel) {
+            if (model.iconType == "pixel") {
+                Glide.with(binding.root.context)
+                    .load(model.iconUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.iv)
+            } else {
+                val uri: Uri =
+                    Uri.parse(model.iconUrl)
 
+
+                binding.iv.loadSvgOrOthers(model.iconUrl)
+
+
+            }
+            binding.tvName.text = model.name
         }
     }
 

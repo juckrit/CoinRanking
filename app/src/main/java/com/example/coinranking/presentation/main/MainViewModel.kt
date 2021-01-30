@@ -24,11 +24,9 @@ class MainViewModel(private val getCoinUseCase: GetCoinUseCase) : ViewModel() {
 
     }
 
-    fun refresh(){
-        viewModelScope.launch(Dispatchers.IO){
+    suspend fun refresh(){
             coins = null
             coins = getCoinUseCase.execute()
-        }
 
     }
 }
