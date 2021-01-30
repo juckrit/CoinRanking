@@ -2,6 +2,7 @@ package com.example.coinranking.data.repository
 
 import android.util.Log
 import androidx.paging.PagingSource
+import com.example.coinranking.LOAD_LIMIT
 import com.example.coinranking.data.CoinCoinsModel
 import com.example.coinranking.data.api.CoinRankingService
 import com.example.coinranking.domain.repository.CoinRepository
@@ -9,7 +10,6 @@ import com.example.coinranking.domain.repository.CoinRepository
 class CoinRepositoryImpl(private val coinRemoteDataSource: CoinRemoteDataSource) : CoinRepository,
     PagingSource<Int, CoinCoinsModel>() {
 
-    private val loadLimit = 100
 
     override fun getCoinsServices(): CoinRankingService {
         return coinRemoteDataSource.getCoinRankingService()
@@ -18,12 +18,12 @@ class CoinRepositoryImpl(private val coinRemoteDataSource: CoinRemoteDataSource)
     override suspend fun load(params: PagingSource.LoadParams<Int>): PagingSource.LoadResult<Int, CoinCoinsModel> {
         try {
             val currentPage = params.key ?: 0
-            val response = getCoinsServices().getCoins(loadLimit,offset = currentPage * loadLimit)
+            val response = getCoinsServices().getCoins(LOAD_LIMIT,offset = currentPage * LOAD_LIMIT)
             val status = response.status
             val coinList = response.data.coins
             Log.d("test size",coinList.size.toString())
             Log.d("test page",currentPage.toString())
-            Log.d("test offset",(currentPage * loadLimit).toString())
+            Log.d("test offset",(currentPage * LOAD_LIMIT).toString())
             val loadResult = PagingSource.LoadResult.Page(
                 data = response.data.coins,
                 prevKey = if (currentPage == 0) null else currentPage - 1,
