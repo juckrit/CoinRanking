@@ -41,32 +41,18 @@ class CoinPagingDataAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-//        if (position > 0) {
-//            if (position % 4 == 0) {
-//                return TYPE_SEPARATOR
-//            } else {
-//                return TYPE_NORMAL
-//            }
-//        } else {
-//            return TYPE_NORMAL
-//        }
-
         if (position % 5 == 4) {
             return TYPE_SEPARATOR
         } else {
             return TYPE_NORMAL
         }
-
-//        return TYPE_NORMAL
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == TYPE_NORMAL) {
-//            val holder = HeaderViewHolder(inflater.inflate(R.layout.item_list_coin_v2_my_coin_type_header, parent, false))
             val holder = ItemListCoinBinding.inflate(inflater, parent, false)
             CoinViewHolder(holder)
         } else {
-//            val holder = HistoryViewHolder(inflater.inflate(R.layout.item_list_coin_v2_my_coin_type_history, parent, false))
             val holder = ItemListCoinSeparatorBinding.inflate(inflater, parent, false)
             SeparatorViewHolder(holder)
         }
@@ -104,29 +90,18 @@ class CoinPagingDataAdapter(
 
     inner class CoinViewHolder(private val binding: ItemListCoinBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
-
         fun binding(model: CoinCoinsModel) {
-
             if (model.iconType == "pixel") {
                 Glide.with(binding.root.context)
                     .load(model.iconUrl)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.iv)
             } else {
-                val uri: Uri =
-                    Uri.parse(model.iconUrl)
-
-
                 binding.iv.loadSvgOrOthers(model.iconUrl)
-
-
             }
             binding.tvName.text = model.name
             binding.tvDesc.text = model.description
         }
-
-
     }
 
     inner class SeparatorViewHolder(private val binding: ItemListCoinSeparatorBinding) :
@@ -138,13 +113,7 @@ class CoinPagingDataAdapter(
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.iv)
             } else {
-                val uri: Uri =
-                    Uri.parse(model.iconUrl)
-
-
                 binding.iv.loadSvgOrOthers(model.iconUrl)
-
-
             }
             binding.tvName.text = model.name
         }
