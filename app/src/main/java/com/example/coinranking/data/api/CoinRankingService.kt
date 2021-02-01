@@ -21,6 +21,8 @@ interface CoinRankingService {
     ): GetCoinResponseModel
 
 
+
+
     companion object {
         val client = OkHttpClient().newBuilder()
             .build()

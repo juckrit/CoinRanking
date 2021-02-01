@@ -1,14 +1,17 @@
 package com.example.coinranking.presentation.main
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.coinranking.databinding.FragmentMainBinding
 import com.example.coinranking.presentation.di.DI_NAME_MainViewModel
 import com.example.coinranking.presentation.helper.PostsLoadStateAdapter
@@ -29,6 +32,7 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: MainViewModel by inject((named(DI_NAME_MainViewModel)))
     private lateinit var coinAdapter: CoinPagingDataAdapter
+    private lateinit var coinSearchAdapter: CoinSearchPagingDataAdapter
 
 
     override fun onCreateView(
@@ -49,7 +53,41 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setup()
         initSwipeToRefresh()
+        initSearch()
         observer()
+    }
+
+    private fun initSearch() {
+        binding.input.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                if (p0?.length == 0) {
+                    binding.recyclerview.visibility = View.VISIBLE
+                    binding.searchRecyclerview.visibility = View.GONE
+                }
+            }
+        })
+        binding.input.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_GO) {
+                updatedCoinFromInput()
+                true
+            } else {
+                false
+            }
+        }
+        binding.input.setOnKeyListener { _, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                updatedCoinFromInput()
+                true
+            } else {
+                false
+            }
+        }
     }
 
 
@@ -63,12 +101,12 @@ class MainFragment : Fragment() {
                 coinAdapter.submitData(it)
             }
         }
-        lifecycleScope.launchWhenCreated {
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             coinAdapter.loadStateFlow.collectLatest { loadStates ->
                 binding.swiperefresh.isRefreshing = loadStates.refresh is LoadState.Loading
             }
         }
-        lifecycleScope.launchWhenCreated {
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             coinAdapter.loadStateFlow
                 // Only emit when REFRESH LoadState for RemoteMediator changes.
                 .distinctUntilChangedBy { it.refresh }
@@ -76,28 +114,56 @@ class MainFragment : Fragment() {
                 .filter { it.refresh is LoadState.NotLoading }
                 .collect { binding.recyclerview.scrollToPosition(0) }
         }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getSearchResult()?.collectLatest {
+                it?.let {
+                    binding.searchRecyclerview.visibility = View.VISIBLE
+                    binding.recyclerview.visibility = View.GONE
+                    coinSearchAdapter.submitData(it)
+                }
+            }
+        }
     }
 
     private fun setup() {
         viewModel.fetchCoin()
         coinAdapter = CoinPagingDataAdapter(requireContext())
+        coinSearchAdapter = CoinSearchPagingDataAdapter(requireContext())
         binding.recyclerview.apply {
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = coinAdapter
             binding.recyclerview.adapter?.notifyDataSetChanged()
         }
+        binding.searchRecyclerview.apply {
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = coinSearchAdapter
+            binding.searchRecyclerview.adapter?.notifyDataSetChanged()
+        }
         binding.recyclerview.adapter = coinAdapter.withLoadStateHeaderAndFooter(
             header = PostsLoadStateAdapter(coinAdapter),
             footer = PostsLoadStateAdapter(coinAdapter)
         )
+        binding.searchRecyclerview.adapter = coinSearchAdapter.withLoadStateHeaderAndFooter(
+            header = PostsLoadStateAdapter(coinAdapter),
+            footer = PostsLoadStateAdapter(coinAdapter)
+        )
+    }
+
+    private fun updatedCoinFromInput() {
+        binding.input.text.trim().toString().let {
+            if (it.isNotBlank()) {
+                binding.recyclerview.visibility = View.GONE
+                viewModel.searchCoinByCoinName(it)
+            }
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
-
 
 
 }
