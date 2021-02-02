@@ -3,10 +3,10 @@ package com.example.coinranking.presentation.helper
 import android.view.ViewGroup
 import androidx.paging.LoadState
 import androidx.paging.LoadStateAdapter
-import com.example.coinranking.presentation.main.CoinPagingDataAdapter
+import com.example.coinranking.presentation.main.CoinSearchPagingDataAdapter
 
-class PostsLoadStateAdapter(
-    private val adapter: CoinPagingDataAdapter
+class PostsLoadStateCoinSearchAdapter(
+    private val adapter: CoinSearchPagingDataAdapter
 ) : LoadStateAdapter<NetworkStateItemViewHolder>() {
     override fun onBindViewHolder(holder: NetworkStateItemViewHolder, loadState: LoadState) {
         holder.bindTo(loadState)

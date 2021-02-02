@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 class GetCoinUseCase(
     private val coinRemoteDataSource: CoinRemoteDataSource
 ) {
-    suspend fun execute(): Flow<PagingData<CoinCoinsModel>> {
+    fun execute(): Flow<PagingData<CoinCoinsModel>> {
         val result = Pager(PagingConfig(pageSize = LOAD_LIMIT,
             enablePlaceholders = false,
             maxSize = PagingConfig.MAX_SIZE_UNBOUNDED

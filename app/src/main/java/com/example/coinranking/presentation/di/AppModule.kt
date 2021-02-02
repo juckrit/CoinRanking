@@ -26,7 +26,7 @@ val appModule = module {
         GetCoinUseCase(get(named(DI_NAME_CoinRemoteDataSourceImpl)))
     }
     single<MainViewModel>(named(DI_NAME_MainViewModel)) {
-        MainViewModel(get(named(DI_NAME_DI_NAME_GetCoinUseCase)))
+        MainViewModel(get(named(DI_NAME_DI_NAME_GetCoinUseCase)),get(named(DI_NAME_CoinRemoteDataSourceImpl)))
     }
 
 

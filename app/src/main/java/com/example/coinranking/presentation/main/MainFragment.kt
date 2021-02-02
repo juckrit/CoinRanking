@@ -11,14 +11,16 @@ import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.filter
+import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.coinranking.data.CoinCoinsModel
 import com.example.coinranking.databinding.FragmentMainBinding
 import com.example.coinranking.presentation.di.DI_NAME_MainViewModel
-import com.example.coinranking.presentation.helper.PostsLoadStateAdapter
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.filter
+import com.example.coinranking.presentation.helper.PostsLoadStateCoinAdapter
+import com.example.coinranking.presentation.helper.PostsLoadStateCoinSearchAdapter
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -115,8 +117,8 @@ class MainFragment : Fragment() {
                 .collect { binding.recyclerview.scrollToPosition(0) }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getSearchResult()?.collectLatest {
-                it?.let {
+            viewModel.getSearchResult()?.collect {
+                if (coinSearchAdapter.itemCount > 0) {
                     binding.searchRecyclerview.visibility = View.VISIBLE
                     binding.recyclerview.visibility = View.GONE
                     coinSearchAdapter.submitData(it)
@@ -142,12 +144,12 @@ class MainFragment : Fragment() {
             binding.searchRecyclerview.adapter?.notifyDataSetChanged()
         }
         binding.recyclerview.adapter = coinAdapter.withLoadStateHeaderAndFooter(
-            header = PostsLoadStateAdapter(coinAdapter),
-            footer = PostsLoadStateAdapter(coinAdapter)
+            header = PostsLoadStateCoinAdapter(coinAdapter),
+            footer = PostsLoadStateCoinAdapter(coinAdapter)
         )
         binding.searchRecyclerview.adapter = coinSearchAdapter.withLoadStateHeaderAndFooter(
-            header = PostsLoadStateAdapter(coinAdapter),
-            footer = PostsLoadStateAdapter(coinAdapter)
+            header = PostsLoadStateCoinSearchAdapter(coinSearchAdapter),
+            footer = PostsLoadStateCoinSearchAdapter(coinSearchAdapter)
         )
     }
 
@@ -156,6 +158,7 @@ class MainFragment : Fragment() {
             if (it.isNotBlank()) {
                 binding.recyclerview.visibility = View.GONE
                 viewModel.searchCoinByCoinName(it)
+
             }
         }
     }
