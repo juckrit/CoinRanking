@@ -11,16 +11,15 @@ import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
-import androidx.paging.PagingData
-import androidx.paging.filter
-import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.coinranking.data.CoinCoinsModel
 import com.example.coinranking.databinding.FragmentMainBinding
 import com.example.coinranking.presentation.di.DI_NAME_MainViewModel
 import com.example.coinranking.presentation.helper.PostsLoadStateCoinAdapter
 import com.example.coinranking.presentation.helper.PostsLoadStateCoinSearchAdapter
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -116,27 +115,22 @@ class MainFragment : Fragment() {
                 .filter { it.refresh is LoadState.NotLoading }
                 .collect { binding.recyclerview.scrollToPosition(0) }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getSearchResult()?.collect {
-                if (coinSearchAdapter.itemCount > 0) {
-                    binding.searchRecyclerview.visibility = View.VISIBLE
-                    binding.recyclerview.visibility = View.GONE
-                    coinSearchAdapter.submitData(it)
-                }
-            }
-        }
+
     }
 
     private fun setup() {
         viewModel.fetchCoin()
         coinAdapter = CoinPagingDataAdapter(requireContext())
-        coinSearchAdapter = CoinSearchPagingDataAdapter(requireContext())
         binding.recyclerview.apply {
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = coinAdapter
             binding.recyclerview.adapter?.notifyDataSetChanged()
         }
+
+
+        coinSearchAdapter = CoinSearchPagingDataAdapter(requireContext())
+
         binding.searchRecyclerview.apply {
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -158,7 +152,15 @@ class MainFragment : Fragment() {
             if (it.isNotBlank()) {
                 binding.recyclerview.visibility = View.GONE
                 viewModel.searchCoinByCoinName(it)
-
+                binding.recyclerview.visibility = View.GONE
+                binding.searchRecyclerview.visibility = View.VISIBLE
+                val count = binding.searchRecyclerview.adapter?.itemCount
+                binding.searchRecyclerview.adapter?.notifyDataSetChanged()
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewModel.getSearchResult()?.collectLatest {
+                        coinSearchAdapter.submitData(it)
+                    }
+                }
             }
         }
     }
