@@ -4,6 +4,9 @@ package com.example.coinranking.presentation.main
 import android.content.Context
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
+import android.os.Build
+import android.text.Editable
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
@@ -17,6 +20,7 @@ import com.example.coinranking.databinding.ItemListCoinBinding
 import com.example.coinranking.databinding.ItemListCoinSeparatorBinding
 import com.example.coinranking.presentation.helper.GlideApp
 import com.example.coinranking.presentation.helper.SvgSoftwareLayerSetter
+import org.xml.sax.XMLReader
 
 
 class CoinPagingDataAdapter(
@@ -90,7 +94,15 @@ class CoinPagingDataAdapter(
                 }
             }
             binding.tvName.text = model.name
-            binding.tvDesc.text = model.description
+            val desc = model.description
+            desc?.let {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    binding.tvDesc.text = Html.fromHtml(desc, null, MyTagHandler())
+
+                } else {
+                    binding.tvDesc.text = Html.fromHtml(model.description, null, MyTagHandler())
+                }
+            }
         }
     }
 
@@ -118,5 +130,42 @@ class CoinPagingDataAdapter(
             binding.tvName.text = model.name
         }
     }
+
+    class MyTagHandler : Html.TagHandler {
+        var first = true
+        var parent: String? = null
+        var index = 1
+        override fun handleTag(
+            opening: Boolean,
+            tag: String,
+            output: Editable,
+            xmlReader: XMLReader?
+        ) {
+            if (tag == "ul") {
+                parent = "ul"
+            } else if (tag == "ol") {
+                parent = "ol"
+            }
+            if (tag == "li") {
+                if (parent == "ul") {
+                    first = if (first) {
+                        output.append("\n\t•")
+                        false
+                    } else {
+                        true
+                    }
+                } else {
+                    if (first) {
+                        output.append("\n\t$index. ")
+                        first = false
+                        index++
+                    } else {
+                        first = true
+                    }
+                }
+            }
+        }
+    }
+
 
 }
