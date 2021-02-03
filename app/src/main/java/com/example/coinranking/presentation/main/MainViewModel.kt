@@ -25,22 +25,4 @@ class MainViewModel(
 
     }
 
-
-    private var searchResult: Flow<PagingData<CoinCoinsModel>>? = null
-
-    //            .cachedIn(viewModelScope)
-    fun getSearchResult(): Flow<PagingData<CoinCoinsModel>>? {
-        return searchResult
-    }
-
-    fun setSearchResult(flow: Flow<PagingData<CoinCoinsModel>>) {
-        searchResult = flow
-    }
-
-
-    fun searchCoinByCoinName(coinName: String) {
-        viewModelScope.launch {
-            searchResult = getCoinUseCase.searchByName(coinName)
-        }
-    }
 }

@@ -4,6 +4,8 @@ package com.example.coinranking.presentation.main
 import android.content.Context
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
+import android.os.Build
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
@@ -19,25 +21,26 @@ import com.example.coinranking.presentation.helper.GlideApp
 import com.example.coinranking.presentation.helper.SvgSoftwareLayerSetter
 
 
-class CoinSearchPagingDataAdapter(
+class CoinSearchAdapter(
     private val mContext: Context
+
 ) :
-    PagingDataAdapter<CoinCoinsModel, RecyclerView.ViewHolder>(MyCoinsComparator) {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val inflater = LayoutInflater.from(mContext)
     private val TYPE_SEPARATOR = 1
     private val TYPE_NORMAL = 2
+    private lateinit var dataList:List<CoinCoinsModel>
 
-    object MyCoinsComparator : DiffUtil.ItemCallback<CoinCoinsModel>() {
-        override fun areItemsTheSame(oldItem: CoinCoinsModel, newItem: CoinCoinsModel): Boolean {
-            // Id is unique.
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: CoinCoinsModel, newItem: CoinCoinsModel): Boolean {
-            return oldItem == newItem
-        }
+    fun setDataList(newList: List<CoinCoinsModel>){
+        dataList = newList
     }
+
+    override fun getItemCount(): Int {
+        return  dataList.size
+    }
+
+
 
     override fun getItemViewType(position: Int): Int {
         if (position % 5 == 4) {
@@ -60,10 +63,10 @@ class CoinSearchPagingDataAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
             TYPE_SEPARATOR -> {
-                getItem(position)?.let { (holder as SeparatorViewHolder).binding(it) }
+                dataList[position].let { (holder as SeparatorViewHolder).binding(it) }
             }
             else -> {
-                getItem(position)?.let { (holder as CoinViewHolder).binding(it) }
+                dataList[position].let { (holder as CoinViewHolder).binding(it) }
             }
         }
     }
@@ -90,7 +93,12 @@ class CoinSearchPagingDataAdapter(
                 }
             }
             binding.tvName.text = model.name
-            binding.tvDesc.text = model.description
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                binding.tvDesc.setText(Html.fromHtml(model.description, Html.FROM_HTML_MODE_COMPACT));
+            } else {
+                binding.tvDesc.setText(Html.fromHtml(model.description));
+            }
         }
     }
 
@@ -118,5 +126,6 @@ class CoinSearchPagingDataAdapter(
             binding.tvName.text = model.name
         }
     }
+
 
 }

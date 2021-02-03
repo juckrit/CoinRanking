@@ -11,11 +11,12 @@ import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
+import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.coinranking.data.CoinCoinsModel
 import com.example.coinranking.databinding.FragmentMainBinding
 import com.example.coinranking.presentation.di.DI_NAME_MainViewModel
 import com.example.coinranking.presentation.helper.PostsLoadStateCoinAdapter
-import com.example.coinranking.presentation.helper.PostsLoadStateCoinSearchAdapter
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
@@ -33,8 +34,8 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: MainViewModel by inject((named(DI_NAME_MainViewModel)))
     private lateinit var coinAdapter: CoinPagingDataAdapter
-    private lateinit var coinSearchAdapter: CoinSearchPagingDataAdapter
-
+    private lateinit var coinSearchAdapter: CoinSearchAdapter
+    private val coinList = mutableListOf<CoinCoinsModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -129,7 +130,7 @@ class MainFragment : Fragment() {
         }
 
 
-        coinSearchAdapter = CoinSearchPagingDataAdapter(requireContext())
+        coinSearchAdapter = CoinSearchAdapter(requireContext())
 
         binding.searchRecyclerview.apply {
             layoutManager =
@@ -141,26 +142,27 @@ class MainFragment : Fragment() {
             header = PostsLoadStateCoinAdapter(coinAdapter),
             footer = PostsLoadStateCoinAdapter(coinAdapter)
         )
-        binding.searchRecyclerview.adapter = coinSearchAdapter.withLoadStateHeaderAndFooter(
-            header = PostsLoadStateCoinSearchAdapter(coinSearchAdapter),
-            footer = PostsLoadStateCoinSearchAdapter(coinSearchAdapter)
-        )
     }
 
     private fun updatedCoinFromInput() {
-        binding.input.text.trim().toString().let {
-            if (it.isNotBlank()) {
-                binding.recyclerview.visibility = View.GONE
-                viewModel.searchCoinByCoinName(it)
+        binding.input.text.trim().toString().let {searchText->
+            val lowerCaseSearchText = searchText.toLowerCase()
+            if (searchText.isNotBlank()) {
+                coinList.clear()
+                coinList.addAll(coinAdapter.snapshot().items)
+                val coinListSize = coinList.size
+                val filteredList = coinList.filter { model->
+                    model.name.toLowerCase().contains(lowerCaseSearchText) || model.slug.contains(lowerCaseSearchText)
+                            ||model.id.toString().contains(lowerCaseSearchText)||model.symbol.contains(lowerCaseSearchText)
+                }
+
+//                binding.recyclerview.visibility = View.GONE
+//                viewModel.searchCoinByCoinName(searchText)
                 binding.recyclerview.visibility = View.GONE
                 binding.searchRecyclerview.visibility = View.VISIBLE
-                val count = binding.searchRecyclerview.adapter?.itemCount
+                coinSearchAdapter.setDataList(filteredList)
                 binding.searchRecyclerview.adapter?.notifyDataSetChanged()
-                viewLifecycleOwner.lifecycleScope.launch {
-                    viewModel.getSearchResult()?.collectLatest {
-                        coinSearchAdapter.submitData(it)
-                    }
-                }
+
             }
         }
     }

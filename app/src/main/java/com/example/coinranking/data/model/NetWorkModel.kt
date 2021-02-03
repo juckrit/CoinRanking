@@ -38,6 +38,7 @@ data class CoinCoinsModel(
     @SerializedName("name") @Expose val name: String,
     @SerializedName("description") @Expose val description: String,
     @SerializedName("iconUrl") @Expose val iconUrl: String?,
-    @SerializedName("iconType") @Expose val iconType: String
+    @SerializedName("iconType") @Expose val iconType: String,
+    @SerializedName("symbol") @Expose val symbol: String
 
     )

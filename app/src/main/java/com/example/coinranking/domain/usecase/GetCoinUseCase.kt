@@ -26,18 +26,18 @@ class GetCoinUseCase(
         return result
     }
 
-    fun searchByName(coinName:String): Flow<PagingData<CoinCoinsModel>> {
-        val result = Pager(PagingConfig(pageSize = LOAD_LIMIT,
-            enablePlaceholders = false,
-            maxSize = PagingConfig.MAX_SIZE_UNBOUNDED
-        )) {
-//            CoinRemotePagingSource(coinRepository.getCoinsServices())
-            CoinRepositoryImpl(coinRemoteDataSource)
-        }.flow.mapLatest {
-            it.filter {
-                it.name.equals(coinName)
-            }
-        }
-        return result
-    }
+//    fun searchByName(coinName:String): Flow<PagingData<CoinCoinsModel>> {
+//        val result = Pager(PagingConfig(pageSize = LOAD_LIMIT,
+//            enablePlaceholders = false,
+//            maxSize = PagingConfig.MAX_SIZE_UNBOUNDED
+//        )) {
+////            CoinRemotePagingSource(coinRepository.getCoinsServices())
+//            CoinRepositoryImpl(coinRemoteDataSource)
+//        }.flow.mapLatest {
+//            it.filter {
+//                it.name.equals(coinName)
+//            }
+//        }
+//        return result
+//    }
 }
